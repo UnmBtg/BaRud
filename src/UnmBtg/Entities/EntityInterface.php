@@ -27,8 +27,8 @@ interface EntityInterface
 
     /**
      * Fill the entity with attributes passed.
-     * @param $attributes
+     * @param array $attributes
      * @return self
      */
-    public function fill($attributes);
+    public function fill(array $attributes);
 }

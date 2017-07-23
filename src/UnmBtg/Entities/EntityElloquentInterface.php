@@ -49,14 +49,6 @@ interface EntityElloquentInterface extends QueryBuilderInterface , EntityInterfa
     public function delete($identifier);
 
     /**
-     * Validates if the given attributes are valid or not.
-     * @param $attributes
-     * @param null $identifier
-     * @return boolean
-     */
-    public function isValid($attributes, $identifier = null);
-
-    /**
      * Find the Entity that matches the identifier.
      * @param $identifier
      * @return EntityElloquentInterface

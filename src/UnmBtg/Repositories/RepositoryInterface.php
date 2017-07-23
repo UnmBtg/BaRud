@@ -11,6 +11,7 @@ namespace UnmBtg\Repositories;
 
 use UnmBtg\Criterias\CriteriaInterface;
 use UnmBtg\Entities\EntityElloquentInterface;
+use UnmBtg\Entities\EntityInterface;
 
 interface RepositoryInterface
 {
@@ -65,4 +66,9 @@ interface RepositoryInterface
      * @return EntityElloquentInterface
      */
     public function find($identifier);
+
+    /**
+     * @return EntityInterface[]
+     */
+    public function get();
 }

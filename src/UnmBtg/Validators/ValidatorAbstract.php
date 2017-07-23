@@ -51,8 +51,15 @@ abstract class ValidatorAbstract implements ValidatorInterface
     }
 
     public abstract function createRules();
-    public abstract function updateRules();
+
+    public function updateRules() {
+        return $this->createRules();
+    }
+
     public abstract function createMessages();
-    public abstract function updateMessages();
+
+    public function updateMessages() {
+        return $this->createMessages();
+    }
 
 }

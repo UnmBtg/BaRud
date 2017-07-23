@@ -13,8 +13,20 @@ use UnmBtg\Criterias\CriteriaInterface;
 use UnmBtg\Entities\EntityElloquentInterface;
 use UnmBtg\Validators\ValidatorStage;
 
-abstract class EloquentRepository implements RepositoryInterface
+class EloquentRepository implements RepositoryInterface
 {
+    protected $entity;
+
+    public function __construct(EntityElloquentInterface $entity)
+    {
+        $this->entity = $entity;
+    }
+
+    public function getKeyName()
+    {
+        $this->getEntity()->getKeyName();
+    }
+
 
     /**
      * @var CriteriaInterface[]
@@ -24,7 +36,9 @@ abstract class EloquentRepository implements RepositoryInterface
     /**
      * @return EntityElloquentInterface
      */
-    public abstract function getEntity();
+    public function getEntity(){
+        return clone $this->entity;
+    }
 
 
     public function where($parameter, $filter = "=", $value = null)
