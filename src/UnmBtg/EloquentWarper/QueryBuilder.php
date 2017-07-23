@@ -15,4 +15,8 @@ use UnmBtg\Repositories\QueryBuilderInterface;
 class QueryBuilder extends Builder implements QueryBuilderInterface
 {
 
+    public function order($column, $direction)
+    {
+        return $this->orderBy($column, $direction);
+    }
 }

@@ -53,16 +53,20 @@ trait Controllify
     }
 
     public function deleteRequest($identifier) {
-        return $this->getService()->delete($identifier);
+        return $this->render([], $this->getService()->delete($identifier));
     }
 
     public function storeRequest(array $request) {
-        return $this->getService()->save($request);
+        return $this->render($request, $this->getService()->save($request));
     }
 
     public function updateRequest($identifier, array $request){
 
-        return $this->getService()->update($identifier, $request);
+        return $this->render($request, $this->getService()->update($identifier, $request));
+    }
+
+    public function showRequest($identifier) {
+        return $this->render([],$this->getService()->find($identifier));
     }
 
 }

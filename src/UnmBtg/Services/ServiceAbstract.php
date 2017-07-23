@@ -42,4 +42,9 @@ abstract class ServiceAbstract
     public function delete($identifier) {
         return $this->getRepository()->delete($identifier);
     }
+
+    public function find($identifier)
+    {
+        return $this->getRepository()->find($identifier);
+    }
 }

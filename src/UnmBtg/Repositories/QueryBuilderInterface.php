@@ -9,7 +9,7 @@
 namespace UnmBtg\Repositories;
 
 
-use UnmBtg\Entities\EntityElloquentInterface;
+use UnmBtg\Entities\EntityInterface;
 
 interface QueryBuilderInterface
 {
@@ -24,13 +24,20 @@ interface QueryBuilderInterface
     public function where($parameter, $filter = "=", $value = null);
 
     /**
-     * @return EntityElloquentInterface[]
+     * @return EntityInterface[]
      */
     public function get();
 
     /**
-     * @return EntityElloquentInterface
+     * @return EntityInterface
      */
     public function first();
+
+    /**
+     * @param $column string Column to be ordered
+     * @param $direction string Direction it should be ordered
+     * @return self
+     */
+    public function order($column, $direction);
     
 }

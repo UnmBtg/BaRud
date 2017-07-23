@@ -23,16 +23,31 @@ class RequestCriteria implements CriteriaInterface
 
     public function __construct(array $filters)
     {
+
         $this->filters = $filters;
     }
 
     public function apply(QueryBuilderInterface $builder)
     {
         $this->builder = $builder;
-        foreach ($this->filters as $name => $filter) {
+
+        if (isset($this->filters['query'])) {
+            $builder = $this->applyWhere($this->filters['query'], $builder);
+        }
+
+        if (isset($this->filters['order'])) {
+            $builder = $builder->order(key($this->filters['order']), current($this->filters['order']));
+        }
+
+        return $builder;
+    }
+
+    protected function applyWhere($filters = [], QueryBuilderInterface $builder) {
+        foreach ($filters as $name => $filter) {
 
             $builder = $this->$name($builder, $filter);
         }
+
         return $builder;
     }
 

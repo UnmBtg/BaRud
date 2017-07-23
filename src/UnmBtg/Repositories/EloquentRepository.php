@@ -74,22 +74,29 @@ class EloquentRepository implements RepositoryInterface
     public function create($attributes)
     {
         if ($this->isValid($attributes)) {
-            $this->getEntity()->fill($attributes)->save();
+            return $this->save($this->getEntity(), $attributes);
         }
     }
 
     public function update($identifier, $attributes)
     {
         if ($this->isValid($attributes, $identifier)) {
-            $this->find($identifier)->fill($attributes)->save();
+            return $this->save($this->find($identifier), $attributes);
         }
     }
 
     public function delete($identifier)
     {
-        return $this->find($identifier)->delete();
+        $element = $this->find($identifier);
+        $element->delete();
+        return $element;
     }
 
+    protected function save(EntityElloquentInterface $entity, $attributes) {
+        $keep = $entity->fill($attributes);
+        $entity->save();
+        return $keep;
+    }
     public function isValid($attributes, $identifier = null)
     {
         $stage = is_null($identifier) ? ValidatorStage::CREATE : ValidatorStage::UPDATE;
