@@ -1,0 +1,91 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: unm
+ * Date: 23/07/17
+ * Time: 18:48
+ */
+
+namespace UnmBtg\Presenters;
+
+
+
+use UnmBtg\Entities\EntityInterface;
+
+class DefaultPresenter implements PresenterInterface
+{
+    /**
+     * @var EntityInterface|\Exception
+     */
+    protected $entity;
+
+    protected $relation = [];
+
+    public function __construct($entity)
+    {
+        $this->entity = $entity;
+    }
+
+    public function isException()
+    {
+        return $this->entity instanceof \Exception;
+    }
+
+    public function render($params = null)
+    {
+        if ($this->isException()) {
+            return $this->renderException();
+        }
+
+        return $this->entity->toArray();
+    }
+
+    protected function renderException() {
+
+        /**
+         * @var $exception \Exception
+         */
+        $exception = $this->entity;
+
+        return [
+            'message' => $exception->getMessage(),
+            'code'    => $exception->getCode(),
+            'trace'   => $exception->getTraceAsString(),
+            'file'    => $exception->getFile(),
+            'line'    => $exception->getLine()
+        ];
+
+    }
+
+    public function relations($params = [])
+    {
+        $relations = [];
+
+        foreach ($params as $relation) {
+            $relations[] = $this->getRelation($relation);
+        }
+
+        return $relations;
+    }
+
+    public function getRelation($relation) {
+
+        if (isset($this->entity, $relation)) {
+            return $this->entity->{$relation};
+        }
+
+        return null;
+    }
+
+
+    public function getType()
+    {
+        return $this->entity->getName();
+    }
+
+    public function getIdentifier()
+    {
+        return $this->entity->getIdentifier();
+    }
+
+}
