@@ -9,6 +9,9 @@
 namespace UnmBtg\Validators;
 
 
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Translation\FileLoader;
+use Illuminate\Translation\Translator;
 use Illuminate\Validation\Validator;
 
 abstract class ValidatorAbstract implements ValidatorInterface
@@ -18,11 +21,12 @@ abstract class ValidatorAbstract implements ValidatorInterface
 
     public function validate($attributes, $stage)
     {
-        $validator = new Validator($attributes, $this->getRules($stage), $this->getMessages($stage));
+        $loader = new FileLoader(new Filesystem(), 'lang');
+        $validator = new Validator(new Translator($loader, 'en'), $attributes, $this->getRules($stage), $this->getMessages($stage));
 
-        if (!$validator->valid()) {
+        if ($validator->fails()) {
             $this->errors = $validator->errors();
-            return false;
+            throw new \Exception(json_encode($this->errors));
         }
 
         return true;
@@ -51,8 +55,15 @@ abstract class ValidatorAbstract implements ValidatorInterface
     }
 
     public abstract function createRules();
-    public abstract function updateRules();
+
+    public function updateRules() {
+        return $this->createRules();
+    }
+
     public abstract function createMessages();
-    public abstract function updateMessages();
+
+    public function updateMessages() {
+        return $this->createMessages();
+    }
 
 }

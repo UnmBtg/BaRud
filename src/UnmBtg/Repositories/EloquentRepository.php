@@ -13,8 +13,20 @@ use UnmBtg\Criterias\CriteriaInterface;
 use UnmBtg\Entities\EntityElloquentInterface;
 use UnmBtg\Validators\ValidatorStage;
 
-abstract class EloquentRepository implements RepositoryInterface
+class EloquentRepository implements RepositoryInterface
 {
+    protected $entity;
+
+    public function __construct(EntityElloquentInterface $entity)
+    {
+        $this->entity = $entity;
+    }
+
+    public function getKeyName()
+    {
+        $this->getEntity()->getKeyName();
+    }
+
 
     /**
      * @var CriteriaInterface[]
@@ -24,7 +36,9 @@ abstract class EloquentRepository implements RepositoryInterface
     /**
      * @return EntityElloquentInterface
      */
-    public abstract function getEntity();
+    public function getEntity(){
+        return clone $this->entity;
+    }
 
 
     public function where($parameter, $filter = "=", $value = null)
@@ -44,11 +58,12 @@ abstract class EloquentRepository implements RepositoryInterface
     public function addCriteria(CriteriaInterface $criteria)
     {
         $this->criterias[] = $criteria;
+        return $this;
     }
 
     public function get()
     {
-        $this->applyCriteria()->get();
+        return $this->applyCriteria()->get();
     }
 
     public function first()
@@ -66,13 +81,13 @@ abstract class EloquentRepository implements RepositoryInterface
     public function update($identifier, $attributes)
     {
         if ($this->isValid($attributes, $identifier)) {
-            $this->find($identifier)->update($identifier, $attributes);
+            $this->find($identifier)->fill($attributes)->save();
         }
     }
 
     public function delete($identifier)
     {
-        $this->delete($identifier);
+        return $this->find($identifier)->delete();
     }
 
     public function isValid($attributes, $identifier = null)
@@ -83,9 +98,11 @@ abstract class EloquentRepository implements RepositoryInterface
 
     protected function applyCriteria() {
         $builder = $this->getEntity()->getQueryBuilder();
+
         foreach ($this->criterias as $criteria) {
             $builder = $criteria->apply($builder);
         }
+
 
         return $builder;
     }

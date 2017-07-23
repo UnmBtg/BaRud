@@ -10,32 +10,41 @@ namespace UnmBtg\Criterias;
 
 
 use UnmBtg\Repositories\QueryBuilderInterface;
+use UnmBtg\Repositories\RepositoryInterface;
 
 class RequestCriteria implements CriteriaInterface
 {
     protected $filters;
+
+    /**
+     * @var QueryBuilderInterface
+     */
+    protected $builder;
 
     public function __construct(array $filters)
     {
         $this->filters = $filters;
     }
 
-
-    public function apply(QueryBuilderInterface $repository)
+    public function apply(QueryBuilderInterface $builder)
     {
+        $this->builder = $builder;
         foreach ($this->filters as $name => $filter) {
-            $repository = $this->$name($repository, $filter);
-        }
 
-        return $repository;
+            $builder = $this->$name($builder, $filter);
+        }
+        return $builder;
     }
 
-    public function __call($name, $arguments)
+    function __call($name, $arguments)
     {
-        if (is_callable([$this, $name])){
-            return call_user_func([$this, $name], $arguments);
+        if (method_exists($this, $name)) {
+            return $this->$name($arguments);
         }
+
+        return $arguments[0]->where($name, $arguments[1]);
     }
+
 
 
 }

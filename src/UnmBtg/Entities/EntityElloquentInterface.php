@@ -27,34 +27,17 @@ interface EntityElloquentInterface extends QueryBuilderInterface , EntityInterfa
 
 
     /**
-     * Create an Entity permanently
-     * @param $attributes
+     * Stores the current entity in the database
      * @return EntityElloquentInterface
      */
-    public function create($attributes);
+    public function save();
+
 
     /**
-     * Updates an Entity permanently
-     * @param $identifier
-     * @param $attributes
+     * Deletes current Entity Permanently
      * @return EntityElloquentInterface
      */
-    public function update($identifier, $attributes);
-
-    /**
-     * Deletes an Entity Permanently
-     * @param $identifier
-     * @return mixed
-     */
-    public function delete($identifier);
-
-    /**
-     * Validates if the given attributes are valid or not.
-     * @param $attributes
-     * @param null $identifier
-     * @return boolean
-     */
-    public function isValid($attributes, $identifier = null);
+    public function delete();
 
     /**
      * Find the Entity that matches the identifier.
