@@ -19,10 +19,13 @@ abstract class ServiceAbstract
      */
     public abstract function getRepository();
 
+    public function update($identifier, $attributes) {
+        return $this->getRepository()->update($identifier, $attributes);
+    }
+
     public function save($attributes) {
 
         $identifier = $this->getRepository()->getKeyName();
-
         if (isset($attributes[$identifier])) {
             $this->getRepository()->update($attributes[$identifier], $attributes);
         }
@@ -36,4 +39,7 @@ abstract class ServiceAbstract
         return $this->getRepository()->addCriteria($criteria)->get();
     }
 
+    public function delete($identifier) {
+        return $this->getRepository()->delete($identifier);
+    }
 }

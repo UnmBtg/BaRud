@@ -58,11 +58,12 @@ class EloquentRepository implements RepositoryInterface
     public function addCriteria(CriteriaInterface $criteria)
     {
         $this->criterias[] = $criteria;
+        return $this;
     }
 
     public function get()
     {
-        $this->applyCriteria()->get();
+        return $this->applyCriteria()->get();
     }
 
     public function first()
@@ -80,13 +81,13 @@ class EloquentRepository implements RepositoryInterface
     public function update($identifier, $attributes)
     {
         if ($this->isValid($attributes, $identifier)) {
-            $this->find($identifier)->update($identifier, $attributes);
+            $this->find($identifier)->fill($attributes)->save();
         }
     }
 
     public function delete($identifier)
     {
-        $this->delete($identifier);
+        return $this->find($identifier)->delete();
     }
 
     public function isValid($attributes, $identifier = null)
@@ -97,9 +98,11 @@ class EloquentRepository implements RepositoryInterface
 
     protected function applyCriteria() {
         $builder = $this->getEntity()->getQueryBuilder();
+
         foreach ($this->criterias as $criteria) {
             $builder = $criteria->apply($builder);
         }
+
 
         return $builder;
     }
