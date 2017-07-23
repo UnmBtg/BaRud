@@ -10,6 +10,7 @@ namespace UnmBtg\Controllers;
 
 
 use UnmBtg\Services\ServiceAbstract;
+use UnmBtg\Transformers\HttpTransformer;
 
 /**
  * Trait Controllify
@@ -38,11 +39,17 @@ trait Controllify
 
     public function indexRequest(array $request) {
         try{
-            return $this->getService()->search($request);
+            $items = $this->getService()->search($request);
+            return $this->render($request, $items);
         } catch (\Exception $e){
             var_dump($e);exit;
         }
 
+    }
+
+    public function render(array $request, $elements) {
+        $transformer = new HttpTransformer($request);
+        return $transformer->render($elements);
     }
 
     public function deleteRequest($identifier) {

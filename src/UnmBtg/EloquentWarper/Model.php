@@ -10,10 +10,18 @@ namespace UnmBtg\EloquentWarper;
 
 
 use UnmBtg\Entities\EntityElloquentInterface;
+use UnmBtg\Presenters\DefaultPresenter;
+use UnmBtg\Presenters\Presentable;
+use UnmBtg\Presenters\PresenterInterface;
 use UnmBtg\Repositories\EloquentRepository;
 
-abstract class Model extends \Illuminate\Database\Eloquent\Model implements EntityElloquentInterface
+abstract class Model extends \Illuminate\Database\Eloquent\Model implements EntityElloquentInterface, Presentable
 {
+    public function getPresenter()
+    {
+        return new DefaultPresenter($this);
+    }
+
 
     public function newEloquentBuilder($query)
     {
@@ -23,6 +31,16 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model implements Enti
     public function getQueryBuilder()
     {
         return $this->newQuery();
+    }
+
+    public function getName()
+    {
+        return $this->getTable();
+    }
+
+    public function getIdentifier()
+    {
+        return $this->getKey();
     }
 
 

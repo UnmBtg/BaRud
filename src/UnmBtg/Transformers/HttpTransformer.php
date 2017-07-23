@@ -79,7 +79,7 @@ class HttpTransformer implements TransformerInterface
         return [$presentable];
     }
 
-    public function baseRender(Presentable $presentable) {
+    protected function baseRender(Presentable $presentable) {
         $presenter = $presentable->getPresenter();
 
         if ($presenter->isException()) {
