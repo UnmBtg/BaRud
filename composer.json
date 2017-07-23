@@ -1,0 +1,22 @@
+{
+  "name": "unnbtg/client_central",
+  "description": "My first Composer project",
+  "version": "1.0.1",
+  "authors": [
+    {
+      "name": "Marco Augusto",
+      "email": "btgmarco33@gmail.com"
+    }
+  ],
+
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.0",
+    "laravel/framework": "5.4"
+  },
+  "autoload": {
+    "psr-0": {
+      "UnmBtg": "src/"
+    }
+  }
+}
