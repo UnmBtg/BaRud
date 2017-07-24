@@ -16,24 +16,34 @@ class HttpTransformer implements TransformerInterface
     protected $request;
 
     protected $hasError = false;
+
+    protected $relateds = [];
+
+    protected $data = [];
+
     public function __construct($request)
     {
         $this->request = $request;
     }
 
+    /**
+     * @param Presentable[] $presentables
+     * @return array
+     */
     public function render($presentables)
     {
-        $data = [];
+        $this->data = [];
         $presentables = $this->normalize($presentables);
 
         foreach ($presentables as $presentable) {
-            $data[] = $this->baseRender($presentable);
+            $this->data[$presentable->getPresenter()->getIdentifier()] = $this->baseRender($presentable);
+            $this->data[$presentable->getPresenter()->getIdentifier()]['relations'] = [];
         }
 
         $related = $this->getRelations($presentables);
 
         return [
-            'data' => $data,
+            'data' => $this->data,
             'success' => !$this->hasError,
             'relationships' => $related
         ];
@@ -46,8 +56,28 @@ class HttpTransformer implements TransformerInterface
         }
 
         $related = [];
+
         foreach ($presentables as $presentable) {
-            $related[] = $this->getRelation($presentable, $this->request['with']);
+            $relation = $this->cleanRelations($this->getRelation($presentable, $this->request['with']));
+            $this->append($presentable, $relation);
+            $related = array_merge($related, $relation);
+        }
+
+        return $related;
+    }
+
+    /**
+     * @param Presentable $presentable
+     * @param array $relations
+     * @return array
+     */
+    protected function append(Presentable $presentable, $relations = []) {
+        if (empty($relations)) {
+            return $relations;
+        }
+        foreach ($relations as $relation) {
+            unset($relation['attributes']);
+            $this->data[$presentable->getPresenter()->getIdentifier()]['relations'][] = $relation;
         }
     }
 
@@ -57,10 +87,18 @@ class HttpTransformer implements TransformerInterface
      */
     protected function cleanRelations($related) {
         $clean = [];
-
         foreach ($related as $value) {
+            if ($value instanceof \Traversable) {
+                return $this->cleanRelations($value);
+            }
             $presenter = $value->getPresenter();
-            $clean[$presenter->getType()][$presenter->getIdentifier()] = $this->baseRender($value);
+            $id = "{$presenter->getType()}.{$presenter->getIdentifier()}";
+
+            if (in_array($id, $this->relateds)) {
+                continue;
+            }
+            $this->relateds[] = "{$presenter->getType()}.{$presenter->getIdentifier()}";
+            $clean[] = $this->baseRender($value);
         }
 
         return $clean;
@@ -71,6 +109,10 @@ class HttpTransformer implements TransformerInterface
         return $presentable->getPresenter()->relations($relations);
     }
 
+    /**
+     * @param Presentable[] $presentable
+     * @return Presentable[]
+     */
     protected function normalize($presentable) {
         if ($presentable instanceof \Traversable) {
             return $presentable;

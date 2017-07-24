@@ -97,6 +97,7 @@ class EloquentRepository implements RepositoryInterface
         $entity->save();
         return $keep;
     }
+
     public function isValid($attributes, $identifier = null)
     {
         $stage = is_null($identifier) ? ValidatorStage::CREATE : ValidatorStage::UPDATE;
@@ -113,5 +114,4 @@ class EloquentRepository implements RepositoryInterface
 
         return $builder;
     }
-
 }

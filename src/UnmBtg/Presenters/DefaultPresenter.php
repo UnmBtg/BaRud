@@ -61,6 +61,10 @@ class DefaultPresenter implements PresenterInterface
     {
         $relations = [];
 
+        if (is_string($params)) {
+            $params = explode(",", $params);
+        }
+
         foreach ($params as $relation) {
             $relations[] = $this->getRelation($relation);
         }

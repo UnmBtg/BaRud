@@ -51,4 +51,5 @@ interface EntityElloquentInterface extends QueryBuilderInterface , EntityInterfa
      * @return EntityElloquentInterface
      */
     public function fill(array $attributes);
+
 }
