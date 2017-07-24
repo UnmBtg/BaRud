@@ -71,4 +71,9 @@ interface RepositoryInterface
      * @return EntityInterface[]
      */
     public function get();
+
+    /**
+     * @return EntityInterface
+     */
+    public function first();
 }

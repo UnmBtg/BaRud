@@ -43,9 +43,9 @@ class HttpTransformer implements TransformerInterface
         $related = $this->getRelations($presentables);
 
         return [
-            'data' => $this->data,
             'success' => !$this->hasError,
-            'relationships' => $related
+            'data' => array_values($this->data),
+            'relationships' => array_values($related)
         ];
     }
 
@@ -94,11 +94,8 @@ class HttpTransformer implements TransformerInterface
             $presenter = $value->getPresenter();
             $id = "{$presenter->getType()}.{$presenter->getIdentifier()}";
 
-            if (in_array($id, $this->relateds)) {
-                continue;
-            }
-            $this->relateds[] = "{$presenter->getType()}.{$presenter->getIdentifier()}";
-            $clean[] = $this->baseRender($value);
+
+            $clean[$id] = $this->baseRender($value);
         }
 
         return $clean;

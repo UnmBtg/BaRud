@@ -68,7 +68,7 @@ class EloquentRepository implements RepositoryInterface
 
     public function first()
     {
-        $this->applyCriteria()->first();
+        return $this->applyCriteria()->first();
     }
 
     public function create($attributes)

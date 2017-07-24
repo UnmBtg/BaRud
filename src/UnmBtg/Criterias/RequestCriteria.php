@@ -47,7 +47,6 @@ class RequestCriteria implements CriteriaInterface
 
             $builder = $this->$name($builder, $filter);
         }
-
         return $builder;
     }
 
