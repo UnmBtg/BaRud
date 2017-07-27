@@ -9,6 +9,7 @@
 namespace UnmBtg\Transformers;
 
 
+use UnmBtg\Exceptions\HttpExceptionInterface;
 use UnmBtg\Presenters\Presentable;
 
 class HttpTransformer implements TransformerInterface
@@ -20,6 +21,8 @@ class HttpTransformer implements TransformerInterface
     protected $relateds = [];
 
     protected $data = [];
+
+    protected $isCollection = false;
 
     public function __construct($request)
     {
@@ -36,18 +39,32 @@ class HttpTransformer implements TransformerInterface
         $presentables = $this->normalize($presentables);
 
         foreach ($presentables as $presentable) {
+            $presenter = $presentable->getPresenter();
+
+            if ($presenter->isException()) {
+                $this->data[] = $this->baseRender($presentable);
+                continue;
+            }
+
             $this->data[$presentable->getPresenter()->getIdentifier()] = $this->baseRender($presentable);
             $this->data[$presentable->getPresenter()->getIdentifier()]['relations'] = [];
         }
 
         $related = $this->getRelations($presentables);
 
-        return [
+        $data =  [
             'success' => !$this->hasError,
-            'data' => array_values($this->data),
-            'relationships' => array_values($related)
+            'data' => $this->isCollection ? array_values($this->data) : current($this->data)
         ];
+
+        if (!$this->hasError) {
+            $data['relationships'] = array_values($related);
+        }
+
+        return $data;
     }
+
+
 
     protected function getRelations($presentables) {
 
@@ -112,6 +129,7 @@ class HttpTransformer implements TransformerInterface
      */
     protected function normalize($presentable) {
         if ($presentable instanceof \Traversable) {
+            $this->isCollection = true;
             return $presentable;
         }
 

@@ -20,6 +20,7 @@ class DefaultService extends ServiceAbstract
     public function __construct(EntityInterface $entity)
     {
         $this->entity = $entity;
+        parent::__construct();
     }
 
     public function getRepository()

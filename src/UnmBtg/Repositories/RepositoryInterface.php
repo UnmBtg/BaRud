@@ -76,4 +76,11 @@ interface RepositoryInterface
      * @return EntityInterface
      */
     public function first();
+
+
+    /**
+     * Array with all validation erros
+     * @return array|null
+     */
+    public function getValidationErrors();
 }

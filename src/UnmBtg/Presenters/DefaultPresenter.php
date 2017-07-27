@@ -11,6 +11,7 @@ namespace UnmBtg\Presenters;
 
 
 use UnmBtg\Entities\EntityInterface;
+use UnmBtg\Exceptions\HttpExceptionInterface;
 
 class DefaultPresenter implements PresenterInterface
 {
@@ -47,7 +48,7 @@ class DefaultPresenter implements PresenterInterface
          */
         $exception = $this->entity;
 
-        return [
+        $data =  [
             'message' => $exception->getMessage(),
             'code'    => $exception->getCode(),
             'trace'   => $exception->getTraceAsString(),
@@ -55,6 +56,13 @@ class DefaultPresenter implements PresenterInterface
             'line'    => $exception->getLine()
         ];
 
+        if ($exception instanceof HttpExceptionInterface && $exception->getEnv() == "production") {
+            unset($data['trace']);
+            unset($data['line']);
+            unset($data['file']);
+        }
+
+        return $data;
     }
 
     public function relations($params = [])

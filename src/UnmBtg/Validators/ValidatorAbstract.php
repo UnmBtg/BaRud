@@ -15,6 +15,7 @@ use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Validator;
+use UnmBtg\Exceptions\ValidationException;
 
 abstract class ValidatorAbstract implements ValidatorInterface
 {
@@ -22,12 +23,21 @@ abstract class ValidatorAbstract implements ValidatorInterface
     protected $errors;
 
     protected $validator;
+
     public function __construct()
     {
-        $loader = new FileLoader(new Filesystem(), 'lang');
-        //$this->validator = new Validator(new Translator($loader, 'en'), $attributes, $this->getRules($stage), $this->getMessages($stage));
-        $this->validator = new Validator(new Translator($loader, 'en'), [], []);
 
+        //$this->validator = new Validator(new Translator($loader, 'en'), $attributes, $this->getRules($stage), $this->getMessages($stage));
+        $this->validator = new Validator($this->getTranslator(), [], []);
+
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Translation\Translator
+     */
+    public function getTranslator() {
+        $loader = new FileLoader(new Filesystem(), 'lang');
+        return new Translator($loader, 'en');
     }
 
     public function validate($attributes, $stage)
@@ -38,7 +48,7 @@ abstract class ValidatorAbstract implements ValidatorInterface
 
         if ($this->validator->fails()) {
             $this->errors = $this->validator->errors();
-            throw new \Exception(json_encode($this->errors));
+            return false;
         }
 
         return true;
