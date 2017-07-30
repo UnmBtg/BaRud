@@ -27,6 +27,14 @@ abstract class ServiceAbstract implements ServiceInterface
         $this->repo = $this->getRepository();
     }
 
+    public function getAll() {
+        return $this->refreshRepo()->get();
+    }
+
+    public function refreshRepo() {
+        $this->repo = $this->getRepository();
+        return $this->repo;
+    }
 
     public function update($identifier, $attributes) {
         return $this->repo->update($identifier, $attributes);

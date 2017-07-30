@@ -15,7 +15,6 @@ use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Validator;
-use UnmBtg\Exceptions\ValidationException;
 
 abstract class ValidatorAbstract implements ValidatorInterface
 {
@@ -38,6 +37,10 @@ abstract class ValidatorAbstract implements ValidatorInterface
     public function getTranslator() {
         $loader = new FileLoader(new Filesystem(), 'lang');
         return new Translator($loader, 'en');
+    }
+
+    public function setConnectionResolver(ConnectionResolverInterface $connectionResolver) {
+        $this->validator->setPresenceVerifier(new DatabasePresenceVerifier($connectionResolver));
     }
 
     public function validate($attributes, $stage)
