@@ -2,7 +2,7 @@
 Easy way to produce a highly customisable way to create an basic CRUD Api.
 
 
-#Basics
+# Basics
 
 This are the basics components of the Crud.
 
@@ -16,7 +16,7 @@ This are the basics components of the Crud.
 
 
 
-#Usage
+# Usage
 Step 1: Create an Entity
 
 In order to store something create an Entity, something around this lines.
