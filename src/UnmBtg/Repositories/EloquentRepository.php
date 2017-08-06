@@ -9,13 +9,20 @@
 namespace UnmBtg\Repositories;
 
 
+use Illuminate\Validation\ValidationException;
 use UnmBtg\Criterias\CriteriaInterface;
 use UnmBtg\Entities\EntityElloquentInterface;
+use UnmBtg\Validators\ValidatorAbstract;
 use UnmBtg\Validators\ValidatorStage;
 
 class EloquentRepository implements RepositoryInterface
 {
     protected $entity;
+
+    /**
+     * @var ValidatorAbstract
+     */
+    protected $validator = null;
 
     public function __construct(EntityElloquentInterface $entity)
     {
@@ -68,32 +75,45 @@ class EloquentRepository implements RepositoryInterface
 
     public function first()
     {
-        $this->applyCriteria()->first();
+        return $this->applyCriteria()->first();
     }
 
     public function create($attributes)
     {
         if ($this->isValid($attributes)) {
-            $this->getEntity()->fill($attributes)->save();
+            return $this->save($this->getEntity(), $attributes);
         }
+
+        return false;
     }
 
     public function update($identifier, $attributes)
     {
         if ($this->isValid($attributes, $identifier)) {
-            $this->find($identifier)->fill($attributes)->save();
+            return $this->save($this->find($identifier), $attributes);
         }
+
+        return false;
     }
 
     public function delete($identifier)
     {
-        return $this->find($identifier)->delete();
+        $element = $this->find($identifier);
+        $element->delete();
+        return $element;
+    }
+
+    protected function save(EntityElloquentInterface $entity, $attributes) {
+        $keep = $entity->fill($attributes);
+        $entity->save();
+        return $keep;
     }
 
     public function isValid($attributes, $identifier = null)
     {
         $stage = is_null($identifier) ? ValidatorStage::CREATE : ValidatorStage::UPDATE;
-        return $this->getEntity()->getValidator()->validate($attributes,$stage);
+        $this->validator = $this->getEntity()->getValidator();
+        return $this->validator->validate($attributes,$stage);
     }
 
     protected function applyCriteria() {
@@ -106,5 +126,11 @@ class EloquentRepository implements RepositoryInterface
 
         return $builder;
     }
+
+    public function getValidationErrors()
+    {
+        return $this->validator->getErrors();
+    }
+
 
 }

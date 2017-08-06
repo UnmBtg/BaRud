@@ -31,4 +31,19 @@ interface EntityInterface
      * @return self
      */
     public function fill(array $attributes);
+
+    /**
+     * @return array returns all values in an array
+     */
+    public function toArray();
+
+    /**
+     * @return string Name to identify this entity
+     */
+    public function getName();
+
+    /**
+     * @return mixed Key to find this Entity
+     */
+    public function getIdentifier();
 }

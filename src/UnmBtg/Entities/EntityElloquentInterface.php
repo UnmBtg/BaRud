@@ -46,4 +46,10 @@ interface EntityElloquentInterface extends QueryBuilderInterface , EntityInterfa
      */
     public function find($identifier);
 
+    /**
+     * @param array $attributes
+     * @return EntityElloquentInterface
+     */
+    public function fill(array $attributes);
+
 }

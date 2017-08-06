@@ -9,9 +9,11 @@
 namespace UnmBtg\Validators;
 
 
+use Illuminate\Database\ConnectionResolverInterface;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Translation\FileLoader;
 use Illuminate\Translation\Translator;
+use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Validator;
 
 abstract class ValidatorAbstract implements ValidatorInterface
@@ -19,14 +21,37 @@ abstract class ValidatorAbstract implements ValidatorInterface
 
     protected $errors;
 
+    protected $validator;
+
+    public function __construct()
+    {
+
+        //$this->validator = new Validator(new Translator($loader, 'en'), $attributes, $this->getRules($stage), $this->getMessages($stage));
+        $this->validator = new Validator($this->getTranslator(), [], []);
+
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Translation\Translator
+     */
+    public function getTranslator() {
+        $loader = new FileLoader(new Filesystem(), 'lang');
+        return new Translator($loader, 'en');
+    }
+
+    public function setConnectionResolver(ConnectionResolverInterface $connectionResolver) {
+        $this->validator->setPresenceVerifier(new DatabasePresenceVerifier($connectionResolver));
+    }
+
     public function validate($attributes, $stage)
     {
-        $loader = new FileLoader(new Filesystem(), 'lang');
-        $validator = new Validator(new Translator($loader, 'en'), $attributes, $this->getRules($stage), $this->getMessages($stage));
+        $this->validator->setRules($this->getRules($stage));
+        $this->validator->setCustomMessages($this->getMessages($stage));
+        $this->validator->setData($this->validator->parseData($attributes));
 
-        if ($validator->fails()) {
-            $this->errors = $validator->errors();
-            throw new \Exception(json_encode($this->errors));
+        if ($this->validator->fails()) {
+            $this->errors = $this->validator->errors();
+            return false;
         }
 
         return true;
